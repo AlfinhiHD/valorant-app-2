@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:projectakhir_praktpm/Models/user.dart';
 import 'package:projectakhir_praktpm/Views/dashboard.dart';
 import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:crypto/crypto.dart';
+import 'package:projectakhir_praktpm/Views/main.dart';
 import 'package:projectakhir_praktpm/Views/registration_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,12 +20,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formfield = GlobalKey<FormState>();
   bool passToggle = true;
+  bool _isObscure = true;
 
+  late Box<UserModel> _myBox;
   late SharedPreferences prefs;
 
   void initState() {
     super.initState();
     checkIsLogin();
+    _myBox = Hive.box(boxName);
   }
 
   void checkIsLogin() async {
@@ -59,35 +64,27 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
 
     if (_formfield.currentState!.validate()) {
+      bool found = false;
       final username = _usernameController.text.trim();
       final password = _passwordController.text.trim();
-      await prefs.setString('username', username);
-
-      // if (mounted) {
-      //   Navigator.push(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => DashboardPage()),
-      //   );
-      // }
-
-      final loginBox = Hive.box('loginBox');
       final hashedPassword = sha256.convert(utf8.encode(password)).toString();
+      found = checkLogin(username, hashedPassword);
 
-      if (loginBox.containsKey(username)) {
-        final storedPassword = loginBox.get(username);
-        if (hashedPassword == storedPassword) {
-          // Login successful
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DashboardPage()),
-          );
-        } else {
-          // Invalid password
-          _showSnackbar('Invalid password');
-        }
+      if (!found) {
+        _showSnackbar('Username or Password is Wrong');
+        _isObscure = false;
       } else {
-        // Username not found
-        _showSnackbar('Username not found');
+        await prefs.setString('username', username);
+        if (mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => DashboardPage(),
+            ),
+                (route) => false,
+          );
+        }
+        _showSnackbar('Login Success');
+        _isObscure = true;
       }
     }
   }
@@ -276,4 +273,38 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
+  int getLength() {
+    return _myBox.length;
+  }
+
+  bool checkLogin(String username, String password) {
+    bool found = false;
+    for (int i = 0; i < getLength(); i++) {
+      if (username == _myBox.getAt(i)!.username &&
+          password == _myBox.getAt(i)!.password) {
+        ("Login Success");
+        found = true;
+        break;
+      } else {
+        found = false;
+      }
+    }
+
+    return found;
+  }
+
+  bool checkUsers(String username) {
+    bool found = false;
+    for (int i = 0; i < getLength(); i++) {
+      if (username == _myBox.getAt(i)!.username) {
+        found = true;
+        break;
+      } else {
+        found = false;
+      }
+    }
+    return found;
+  }
 }
+
+

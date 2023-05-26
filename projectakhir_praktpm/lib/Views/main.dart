@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:projectakhir_praktpm/Models/user.dart';
 import 'package:projectakhir_praktpm/Views/login_screen.dart';
 
+String boxName = 'USER';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox('loginBox');
-
+  Hive.registerAdapter<UserModel>(UserModelAdapter());
+  await Hive.openBox<UserModel>(boxName);
   runApp(const MyApp());
 }
 

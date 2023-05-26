@@ -23,12 +23,23 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
       isFavorite = !isFavorite;
     });
 
-    // Menambahkan atau menghapus agent dari daftar favorite
     if (isFavorite) {
       FavoriteAgents().addToFavorites(widget.agent);
     } else {
       FavoriteAgents().removeFromFavorites(widget.agent);
     }
+  }
+
+  void _showAbilityDescription(String abilityName, String abilityDescription) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(abilityName),
+          content: Text(abilityDescription),
+        );
+      },
+    );
   }
 
   @override
@@ -136,7 +147,7 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Abilities', // Tambahkan kata "Abilities"
+                          'Abilities',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -146,110 +157,43 @@ class _AgentDetailPageState extends State<AgentDetailPage> {
                         SizedBox(height: 8),
                         Row(
                           children: [
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          widget.agent['abilities'] != null &&
-                                              widget.agent['abilities'].length > 0
-                                              ? widget.agent['abilities'][0]['displayIcon']
-                                              : '',
+                            for (var ability in widget.agent['abilities'])
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    InkWell(
+                                      onTap: () {
+                                        _showAbilityDescription(
+                                          ability['displayName'],
+                                          ability['description'],
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 30,
+                                        height: 30,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          image: DecorationImage(
+                                            image: NetworkImage(
+                                              ability['displayIcon'],
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
-                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    widget.agent['abilities'] != null &&
-                                        widget.agent['abilities'].length > 0
-                                        ? widget.agent['abilities'][0]['displayName']
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          widget.agent['abilities'] != null &&
-                                              widget.agent['abilities'].length > 1
-                                              ? widget.agent['abilities'][1]['displayIcon']
-                                              : '',
-                                        ),
-                                        fit: BoxFit.cover,
+                                    SizedBox(height: 8),
+                                    Text(
+                                      ability['displayName'],
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        color: Colors.white,
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    widget.agent['abilities'] != null &&
-                                        widget.agent['abilities'].length > 1
-                                        ? widget.agent['abilities'][1]['displayName']
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  Container(
-                                    width: 50,
-                                    height: 50,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                        image: NetworkImage(
-                                          widget.agent['abilities'] != null &&
-                                              widget.agent['abilities'].length > 2
-                                              ? widget.agent['abilities'][2]['displayIcon']
-                                              : '',
-                                        ),
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    widget.agent['abilities'] != null &&
-                                        widget.agent['abilities'].length > 2
-                                        ? widget.agent['abilities'][2]['displayName']
-                                        : '',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
                         ),
                       ],

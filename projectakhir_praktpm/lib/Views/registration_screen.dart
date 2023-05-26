@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:crypto/crypto.dart';
+import 'package:projectakhir_praktpm/Models/user.dart';
 import 'package:projectakhir_praktpm/Views/login_screen.dart';
+import 'package:projectakhir_praktpm/Views/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -14,6 +17,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final _formfield = GlobalKey<FormState>();
   bool passToggle = true;
+
+  late SharedPreferences prefs;
+
+  late Box<UserModel> _myBox;
+
+  @override
+  void initState() {
+    super.initState();
+    Initial();
+    _myBox = Hive.box(boxName);
+  }
+
+  void Initial() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
 
   @override
   void dispose() {
@@ -35,16 +54,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final username = _usernameController.text.trim();
       final password = _passwordController.text.trim();
 
-      final loginBox = Hive.box('loginBox');
-      final hashedPassword = sha256.convert(utf8.encode(password)).toString();
-
-      if (loginBox.containsKey(username)) {
+      if (_myBox.containsKey(username)) {
         // Username already exists
         _showSnackbar('Username already exists');
       } else {
-        loginBox.put(username, hashedPassword);
-        // Registration successful
+        final hashedPassword = sha256.convert(utf8.encode(password)).toString();
+        _myBox.add(UserModel(
+          username: username,
+          password: hashedPassword,
+        ));
         _showSnackbar('Registration successful');
+        await prefs.remove("username");
         _goToLogin();
       }
     }
