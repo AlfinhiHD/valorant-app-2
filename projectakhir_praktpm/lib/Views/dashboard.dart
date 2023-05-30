@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:projectakhir_praktpm/Views/datadiri.dart';
 import 'package:projectakhir_praktpm/Views/detail.dart';
 import 'package:projectakhir_praktpm/Views/favorite.dart';
 import 'package:projectakhir_praktpm/Views/login_screen.dart';
+import 'package:projectakhir_praktpm/Views/moneyconverter.dart';
+import 'package:projectakhir_praktpm/Views/sarankesan.dart';
+import 'package:projectakhir_praktpm/Views/timeconverter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -128,6 +132,22 @@ class _DashboardPageState extends State<DashboardPage> {
             IconButton(
               icon: Icon(Icons.favorite, color: Colors.white),
               onPressed: navigateToFavoriteAgentsPage,
+            ),
+            IconButton(
+              icon: Icon(Icons.monetization_on, color: Colors.white),
+              onPressed: navigateToCurrencyConverterPage,
+            ),
+            IconButton(
+              icon: Icon(Icons.access_time_filled, color: Colors.white),
+              onPressed: navigateToTimeConverterPage,
+            ),
+            IconButton(
+              icon: Icon(Icons.person, color: Colors.white),
+              onPressed: navigateToProfilePage,
+            ),
+            IconButton(
+              icon: Icon(Icons.feedback, color: Colors.white),
+              onPressed: navigateToFeedbackPage,
             ),
             IconButton(
               icon: Icon(Icons.logout, color: Colors.white),
@@ -280,10 +300,44 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
+  void navigateToCurrencyConverterPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CurrencyConverterPage(),
+      ),
+    );
+  }
+
+  void navigateToTimeConverterPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TimeConverterPage(),
+      ),
+    );
+  }
+
+  void navigateToProfilePage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProfilePage(),
+      ),
+    );
+  }
+
+  void navigateToFeedbackPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FeedbackPage(),
+      ),
+    );
+  }
 
   void navigateToLogout() async {
     await prefs.remove("username");
-
     Navigator.push(
       context,
       MaterialPageRoute(
